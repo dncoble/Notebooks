@@ -69,7 +69,7 @@ class CellSet:
     """
     def must_in(self, n, subset):
         nset = self.subtract(subset)
-        return not any([c[n-1] for c in nset])
+        return not any([c[n-1] for c in nset.cells])
     
     """
     eliminate the number n as a possibility in all elems. return True
@@ -101,7 +101,7 @@ class Sudoku:
         for i in range(0,9):
             for j in range(0,9):
                 if(not board[i][j] is None):
-                    digit = board[i, j]
+                    digit = board[i][j]
                     self.notes[i][j] = np.array([False if i!=digit else True for i in range(1,10)])
     
     def init_cells(self):
@@ -112,10 +112,11 @@ class Sudoku:
     
     def init_multiedges(self):
         indices = np.array(range(81), dtype=np.int).reshape(9,9)
-        rows = CellSet(np.array([self.cells[index] for index in indices]))
-        cols = CellSet(np.array([self.cells[index] for index in indices.T]))
-        box_indices = [indices[i:i+3,j:j+3] for i, j in itertools.product(range(0, 10, 3), range(0, 10, 3))]
-        boxs = CellSet(np.array([self.cells[box_index] for box_index in box_indices]))
+        # I have a problem with list comprehension
+        rows = [CellSet(np.array([self.cells[index] for index in index_set])) for index_set in indices]
+        cols = [CellSet(np.array([self.cells[index] for index in index_set])) for index_set in indices.T]
+        box_indices = np.array([indices[i:i+3,j:j+3].flatten() for i, j in itertools.product(range(0, 9, 3), range(0, 9, 3))])
+        boxs = [CellSet(np.array([self.cells[index] for index in index_set])) for index_set in box_indices]
         self.rows = rows
         self.cols = cols
         self.boxs = boxs
@@ -128,10 +129,10 @@ class Sudoku:
     
     """ returns the number of permutations possible given notes. """
     def naive_size(self):
-        return np.prod([el.confusion() for el in self.elements])
+        return np.prod([el.confusion() for el in self.cells])
     
     def num_solved(self):
-        return np.sum([el.is_solved() for el in self.elements])
+        return np.sum([el.is_solved() for el in self.cells])
     
     """
     exclusive logic between the edges in set1 and set2
@@ -151,13 +152,33 @@ class Sudoku:
                         logiced = logiced or u.elim_n(n)
         return logiced
     
+    """
+    inclusive logic within the multiedge set
+    """
+    def inclusive_logic(self, multiedge):
+        digit_confusion = 
+    
     """ performs all logic """ 
     def logic(self):
         logiced = False # flag if any logic reduction was performed
-
-        logiced = logiced or self.exclusive_logic(self.rows, self.cols)
-        # s1 = 
         
+        # exclusive logic
+        logiced = logiced or self.exclusive_logic(self.rows, self.cols)
+        logiced = logiced or self.exclusive_logic(self.rows[0:3], self.boxs[0:3])
+        logiced = logiced or self.exclusive_logic(self.rows[3:6], self.boxs[3:6])
+        logiced = logiced or self.exclusive_logic(self.rows[6:9], self.boxs[6:9])
+        logiced = logiced or self.exclusive_logic(self.cols[0:3], [self.boxs[0],self.boxs[3],self.boxs[6]])
+        logiced = logiced or self.exclusive_logic(self.cols[3:6], [self.boxs[1],self.boxs[4],self.boxs[7]])
+        logiced = logiced or self.exclusive_logic(self.cols[6:9], [self.boxs[2],self.boxs[5],self.boxs[8]])
+       
+        # inclusive logic
+        for row in self.rows:
+            self.inclusive_logic(row)
+        for col in self.cols:
+            self.inclusive_logic(col)
+        for box in self.boxs:
+            self.inclusive_logic(box)
+    
         return logiced
                 
     
@@ -172,17 +193,17 @@ class Sudoku:
             
 
 if __name__ == "__main__":
-    empty = Sudoku([
-        [None, None, None, None, None, None, None, None, None],
-        [None, None, None, None, None, None, None, None, None],
-        [None, None, None, None, None, None, None, None, None],
-        [None, None, None, None, None, None, None, None, None],
-        [None, None, None, None, None, None, None, None, None],
-        [None, None, None, None, None, None, None, None, None],
-        [None, None, None, None, None, None, None, None, None],
-        [None, None, None, None, None, None, None, None, None],
-        [None, None, None, None, None, None, None, None, None]
-    ])
+    # empty = Sudoku([
+    #     [None, None, None, None, None, None, None, None, None],
+    #     [None, None, None, None, None, None, None, None, None],
+    #     [None, None, None, None, None, None, None, None, None],
+    #     [None, None, None, None, None, None, None, None, None],
+    #     [None, None, None, None, None, None, None, None, None],
+    #     [None, None, None, None, None, None, None, None, None],
+    #     [None, None, None, None, None, None, None, None, None],
+    #     [None, None, None, None, None, None, None, None, None],
+    #     [None, None, None, None, None, None, None, None, None]
+    # ])
     game1 = Sudoku([
         [5, 3, None, None, 7, None, None, None, None],
         [6, None, None, 1, 9, 5, None, None, None],
@@ -193,16 +214,17 @@ if __name__ == "__main__":
         [None, 6, None, None, None, None, 2, 8, None],
         [None, None, None, 4, 1, 9, None, None, 5],
         [None, None, None, None, 8, None, None, 7, 9]
-    ])
-    evil1 = Sudoku([
-        [None, None, None, None, None, None, None, None, 4],
-        [None, None, 9, None, 8, None, 2, None, 1],
-        [None, 3, None, None, None, 9, None, None, None],
-        [None, 5, None, 1, None, None, 6, None, 2],
-        [None, None, None, None, 6, None, None, 3, None],
-        [None, None, 2, None, None, None, None, 4, None],
-        [None, None, None, None, None, None, None, 6, None],
-        [7, None, None, 5, None, None, None, None, None],
-        [None, None, 3, None, 1, None, 8, None, 9]
-    ])
-    sudoku = Sudoku()
+    ], verbose=True)
+    
+    game1.solve()
+    # evil1 = Sudoku([
+    #     [None, None, None, None, None, None, None, None, 4],
+    #     [None, None, 9, None, 8, None, 2, None, 1],
+    #     [None, 3, None, None, None, 9, None, None, None],
+    #     [None, 5, None, 1, None, None, 6, None, 2],
+    #     [None, None, None, None, 6, None, None, 3, None],
+    #     [None, None, 2, None, None, None, None, 4, None],
+    #     [None, None, None, None, None, None, None, 6, None],
+    #     [7, None, None, 5, None, None, None, None, None],
+    #     [None, None, 3, None, 1, None, 8, None, 9]
+    # ])
