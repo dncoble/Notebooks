@@ -26,3 +26,10 @@ The evolution of the bifurcation diagram for the logistic map
 <p align="center">
 <img src="https://raw.githubusercontent.com/dncoble/Notebooks/main/Discrete%20Dynamical%20Systems/bifurcation%20evolution.gif" width="600"/> <br>
 </p>
+
+### Convolutional Neural Networks
+How well can a CNN predict where two lines will intersect? Pretty well...
+
+<p align="center">
+<img src="https://raw.githubusercontent.com/dncoble/Notebooks/main/Toy%20dataset%20with%20CNN/CNN%20predictions.png" width="800"/> <br>
+</p>
