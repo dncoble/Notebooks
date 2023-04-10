@@ -20,3 +20,9 @@ The stick-slip phenomena of friction as a block is pulled along a surface:
 <p align="center">
 <img src="https://raw.githubusercontent.com/dncoble/Notebooks/main/Modeling%20Slip-Stick%20Motion%20with%20the%20LuGre%20Friction%20Model/stribeck-animation.gif" width="600"/> <br>
 </p>
+
+### Discrete Dynamical Systems
+The evolution of the bifurcation diagram for the logistic map
+<p align="center">
+<img src="https://raw.githubusercontent.com/dncoble/Notebooks/main/Discrete%20Dynamical%20Systems/bifurcation%20evolution.gif" width="600"/> <br>
+</p>
