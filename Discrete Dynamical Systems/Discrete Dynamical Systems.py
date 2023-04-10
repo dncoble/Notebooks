@@ -31,4 +31,4 @@ def animate(i):
     x_ = logistic(x_, l_)
 
 ani = matplotlib.animation.FuncAnimation(fig, animate, frames=iterates)
-ani.save("bifurcation evolution.gif", writer='ffmpeg', fps=10, dpi=50)
+ani.save("bifurcation evolution.gif", writer='ffmpeg', fps=10, dpi=150)
