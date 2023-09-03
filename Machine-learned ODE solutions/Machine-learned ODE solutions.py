@@ -187,7 +187,6 @@ def physics_guided_loss(x_interior, t_interior, t_initial, x_bound1, x_bound2):
     grads = tf.gradients(loss, model.weights)
     
     return [loss, grads]
-
 #%%
 optimizer = keras.optimizers.Adam(learning_rate=learning_rate)
 # keep results for plotting
