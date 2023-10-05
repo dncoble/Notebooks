@@ -1,10 +1,6 @@
 # Notebooks
 Sometimes I make little projects that I may or may not be sharing in the future. Some of these are old projects that I made in python and have reformatted them to notebooks and added some notes. Over time I'll edit and add more and hopefully some will even become 'presentable.' The main subjects are machine learning and signal processing.
 
-## Future notebooks
-1. The Fourier Transform
-2. Digital filters (following The Art of Doing Science and Engineering chapters)
-
 ## Pretty Pictures
 
 ### What's the longest possible Wordle game?
